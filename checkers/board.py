@@ -81,8 +81,22 @@ class Board:
         return None 
     
     def getValidMoves(self, piece):
-        pass
-        # Your Code Goes Here
+        moves = dict()
+        row = piece.row
+        color = piece.color
+        value = max(row - 3, -1) if color == RED else min(row + 3, ROWS)
+        kingValue = max(row - 3, -1) if color != RED else min(row + 3, ROWS)
+        up = -1 if color == RED else 1
+        left = piece.col - 1
+        right = piece.col + 1
+        moves.update(self._traverseRight(row + up, value, up, color, right))
+        moves.update(self._traverseLeft(row + up, value, up, color, left))
+
+        if piece.king:
+            moves.update(self._traverseRight(row - up, kingValue, -up, color, right))
+            moves.update(self._traverseLeft(row - up, kingValue, -up, color, left))
+
+        return moves
 
     def _traverseLeft(self, start, stop, step, color, left, skipped=[]):
         moves = {}
