@@ -12,15 +12,17 @@ def minimax(position, depth, playerTurn, game):
     moves = getAllMoves(position, playerColor, game)
     if len(getAllMoves(position, playerColor, game)) == 0:
         return position.evaluate(), -1
-    next_position = moves[0]
+    next_position = None
 
     for move in moves:
-        updated_value = minimax(move, depth - 1, not playerTurn, game)[0]
-        maximumValue = max(updated_value, value)
-        minimumValue = min(updated_value, value)
-        value = maximumValue if playerTurn else minimumValue
-        if value == updated_value:
-            next_position = move
+        newBoards = getNewBoard(moves[move], position, move, game)
+        for newBoard in newBoards:
+            updated_value = minimax(newBoard, depth - 1, not playerTurn, game)[0]
+            maximumValue = max(updated_value, value)
+            minimumValue = min(updated_value, value)
+            value = maximumValue if playerTurn else minimumValue
+            if value == updated_value or next_position == None:
+                next_position = newBoard
     return value, next_position
 
 
@@ -31,13 +33,19 @@ def simulateMove(piece, move, board, game, skip):
     return board
 
 
+def getNewBoard(validMove, board, piece, game):
+    newBoards = list()
+    for move, skip in validMove.items():
+        tempBoard = copy.deepcopy(board)
+        tempPiece = tempBoard.getPiece(piece.row, piece.col)
+        newBoard = simulateMove(tempPiece, move, tempBoard, game, skip)
+        newBoards.append(newBoard)
+    return newBoards
+
+
 def getAllMoves(board, color, game):
-    moves = []
+    validMoves = dict()
     for piece in board.getAllPieces(color):
-        validMoves = board.getValidMoves(piece)
-        for move, skip in validMoves.items():
-            tempBoard = copy.deepcopy(board)
-            tempPiece = tempBoard.getPiece(piece.row, piece.col)
-            newBoard = simulateMove(tempPiece, move, tempBoard, game, skip)
-            moves.append(newBoard)
-    return moves
+        validMoves[piece] = board.getValidMoves(piece)
+    return validMoves
+
