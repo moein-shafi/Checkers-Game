@@ -24,11 +24,11 @@ if __name__ == '__main__':
             break
 
         if game.turn == WHITE:
-            value, newBoard = minimax(game.getBoard(), WHITE_DEPTH, True, game)
+            value, newBoard = minimax(game.getBoard(), WHITE_DEPTH, True)
             game.aiMove(newBoard)
 
         elif game.turn == RED:
-            value, newBoard = minimax(game.getBoard(), RED_DEPTH, False, game)
+            value, newBoard = minimax(game.getBoard(), RED_DEPTH, False)
             game.aiMove(newBoard)
 
         for event in pygame.event.get():
